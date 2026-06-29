@@ -1,0 +1,5 @@
+streamlit
+smartsheet-python-sdk
+requests
+python-dotenv
+pandas
