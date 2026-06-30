@@ -13,16 +13,11 @@ st.set_page_config(
     layout="wide",
 )
 
-# Logo Syngenta centralizada
-st.markdown(
-    """
-    <div style="text-align:center; margin-bottom:10px;">
-        <img src="https://www.syngenta.com.br/themes/theme_flavor/img/logo-syngenta.svg" width="200">
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
+    # Logo Syngenta centralizada
+    col_a, col_b, col_c = st.columns([1, 1, 1])
+    with col_b:
+        st.image("logo.png", width=200)
+    
 # Header estilo banner azul com borda verde
 st.markdown(
     """
