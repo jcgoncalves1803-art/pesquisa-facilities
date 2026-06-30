@@ -8,8 +8,8 @@ from modules.ibge_api import IBGEService
 from modules.charts import HighchartsRenderer
 
 st.set_page_config(
-    page_title="Pesquisa de SatisfaÃ§Ã£o - Facilities",
-    page_icon="ðŸ“‹",
+    page_title="Pesquisa de Satisfacao - Facilities",
+    page_icon="\U0001f4cb",
     layout="wide",
 )
 
@@ -17,11 +17,11 @@ st.markdown(
     """
 <div style="text-align:center; padding:20px; background:linear-gradient(135deg,#1a1a2e,#0f3460);
      color:white; border-radius:12px; margin-bottom:25px;">
-    <h1>ðŸ“‹ Pesquisa de SatisfaÃ§Ã£o</h1>
-    <h3>ServiÃ§os de Facilities | 1Âº Semestre 2026</h3>
-    <p>Avalie sua satisfaÃ§Ã£o com transporte, portaria, vigilÃ¢ncia, limpeza, jardinagem e refeiÃ§Ã£o</p>
+    <h1>&#128203; Pesquisa de Satisfa&#231;&#227;o</h1>
+    <h3>Servi&#231;os de Facilities | 1&#186; Semestre 2026</h3>
+    <p>Avalie sua satisfa&#231;&#227;o com transporte, portaria, vigil&#226;ncia, limpeza, jardinagem e refei&#231;&#227;o</p>
     <span style="background:#28a745; padding:5px 15px; border-radius:20px; font-size:0.85em;">
-        ðŸ”’ 100% AnÃ´nimo
+        &#128274; 100% An&#244;nimo
     </span>
 </div>
 """,
@@ -40,33 +40,34 @@ ESCALA = {
     5: "5 - Muito satisfeito",
 }
 
-SERVICOS = ["Transporte", "Portaria", "VigilÃ¢ncia", "Limpeza", "Jardinagem", "RefeiÃ§Ã£o"]
+SERVICOS = ["Transporte", "Portaria", "Vigilancia", "Limpeza", "Jardinagem", "Refeicao"]
 
-tab_avaliar, tab_resultados = st.tabs(["ðŸ“ Avaliar", "ðŸ“Š Resultados"])
+tab_avaliar, tab_resultados = st.tabs(["\U0001f4dd Avaliar", "\U0001f4ca Resultados"])
 
 with tab_avaliar:
     if "ja_respondeu" not in st.session_state:
         st.session_state.ja_respondeu = False
 
     if st.session_state.ja_respondeu:
-        st.success("âœ… VocÃª jÃ¡ enviou sua avaliaÃ§Ã£o. Obrigado pela participaÃ§Ã£o!")
+        st.success("\u2705 Voce ja enviou sua avaliacao. Obrigado pela participacao!")
         st.info("Cada pessoa pode responder apenas uma vez.")
     else:
-        st.markdown("""        **Prezado(a) colaborador(a),**
+        st.markdown("""
+        **Prezado(a) colaborador(a),**
 
-        Sua opiniÃ£o Ã© essencial para a melhoria contÃ­nua dos nossos serviÃ§os de Facilities.
+        Sua opiniao e essencial para a melhoria continua dos nossos servicos de Facilities.
         Por favor, avalie os aspectos abaixo utilizando a seguinte escala:
 
-        âœ… 1 - Muito insatisfeito | 2 - Insatisfeito | 3 - Neutro | 4 - Satisfeito | 5 - Muito satisfeito
+        \u2705 1 - Muito insatisfeito | 2 - Insatisfeito | 3 - Neutro | 4 - Satisfeito | 5 - Muito satisfeito
         """)
 
         st.divider()
 
         with st.form("form_avaliacao", clear_on_submit=True):
 
-            st.markdown("### ðŸšŒ 1. Transporte")
+            st.markdown("### \U0001f68c 1. Transporte")
             transporte_nota = st.radio(
-                "Qual sua satisfaÃ§Ã£o com o serviÃ§o de transporte?",
+                "Qual sua satisfacao com o servico de transporte?",
                 options=[1, 2, 3, 4, 5],
                 index=None,
                 format_func=lambda x: ESCALA[x],
@@ -74,15 +75,15 @@ with tab_avaliar:
                 key="transporte_nota",
             )
             transporte_comentario = st.text_input(
-                "Compartilhe seus comentÃ¡rios ou sugestÃµes sobre o transporte:",
+                "Compartilhe seus comentarios ou sugestoes sobre o transporte:",
                 key="transporte_com",
             )
 
             st.divider()
 
-            st.markdown("### ðŸšª 2. Portaria")
+            st.markdown("### \U0001f6aa 2. Portaria")
             portaria_nota = st.radio(
-                "Qual sua satisfaÃ§Ã£o com o serviÃ§o de portaria?",
+                "Qual sua satisfacao com o servico de portaria?",
                 options=[1, 2, 3, 4, 5],
                 index=None,
                 format_func=lambda x: ESCALA[x],
@@ -90,15 +91,15 @@ with tab_avaliar:
                 key="portaria_nota",
             )
             portaria_comentario = st.text_input(
-                "Compartilhe sua opiniÃ£o sobre a portaria:",
+                "Compartilhe sua opiniao sobre a portaria:",
                 key="portaria_com",
             )
 
             st.divider()
 
-            st.markdown("### ðŸ›¡ï¸ 3. VigilÃ¢ncia")
+            st.markdown("### \U0001f6e1\ufe0f 3. Vigilancia")
             vigilancia_nota = st.radio(
-                "Qual sua satisfaÃ§Ã£o com o serviÃ§o de vigilÃ¢ncia?",
+                "Qual sua satisfacao com o servico de vigilancia?",
                 options=[1, 2, 3, 4, 5],
                 index=None,
                 format_func=lambda x: ESCALA[x],
@@ -106,15 +107,15 @@ with tab_avaliar:
                 key="vigilancia_nota",
             )
             vigilancia_comentario = st.text_input(
-                "Compartilhe sua opiniÃ£o sobre a vigilÃ¢ncia:",
+                "Compartilhe sua opiniao sobre a vigilancia:",
                 key="vigilancia_com",
             )
 
             st.divider()
 
-            st.markdown("### ðŸ§¹ 4. Limpeza")
+            st.markdown("### \U0001f9f9 4. Limpeza")
             limpeza_nota = st.radio(
-                "Qual sua satisfaÃ§Ã£o com o serviÃ§o de limpeza?",
+                "Qual sua satisfacao com o servico de limpeza?",
                 options=[1, 2, 3, 4, 5],
                 index=None,
                 format_func=lambda x: ESCALA[x],
@@ -122,15 +123,15 @@ with tab_avaliar:
                 key="limpeza_nota",
             )
             limpeza_comentario = st.text_input(
-                "Compartilhe sua opiniÃ£o sobre a limpeza:",
+                "Compartilhe sua opiniao sobre a limpeza:",
                 key="limpeza_com",
             )
 
             st.divider()
 
-            st.markdown("### ðŸŒ¿ 5. Jardinagem")
+            st.markdown("### \U0001f33f 5. Jardinagem")
             jardinagem_nota = st.radio(
-                "Qual sua satisfaÃ§Ã£o com o serviÃ§o de jardinagem?",
+                "Qual sua satisfacao com o servico de jardinagem?",
                 options=[1, 2, 3, 4, 5],
                 index=None,
                 format_func=lambda x: ESCALA[x],
@@ -138,15 +139,15 @@ with tab_avaliar:
                 key="jardinagem_nota",
             )
             jardinagem_comentario = st.text_input(
-                "Compartilhe sua opiniÃ£o sobre a jardinagem:",
+                "Compartilhe sua opiniao sobre a jardinagem:",
                 key="jardinagem_com",
             )
 
             st.divider()
 
-            st.markdown("### ðŸ½ï¸ 6. RefeiÃ§Ã£o")
+            st.markdown("### \U0001f37d\ufe0f 6. Refeicao")
             refeicao_nota = st.radio(
-                "Qual sua satisfaÃ§Ã£o com o serviÃ§o de refeiÃ§Ã£o?",
+                "Qual sua satisfacao com o servico de refeicao?",
                 options=[1, 2, 3, 4, 5],
                 index=None,
                 format_func=lambda x: ESCALA[x],
@@ -154,15 +155,15 @@ with tab_avaliar:
                 key="refeicao_nota",
             )
             refeicao_comentario = st.text_input(
-                "Compartilhe sua opiniÃ£o sobre as refeiÃ§Ãµes:",
+                "Compartilhe sua opiniao sobre as refeicoes:",
                 key="refeicao_com",
             )
 
             st.divider()
 
-            st.markdown("### â­ 7. SatisfaÃ§Ã£o Geral (NPS)")
+            st.markdown("### \u2b50 7. Satisfacao Geral (NPS)")
             nps = st.radio(
-                "Em uma escala de 0 a 10, qual Ã© sua satisfaÃ§Ã£o geral com os serviÃ§os de Facilities?",
+                "Em uma escala de 0 a 10, qual e sua satisfacao geral com os servicos de Facilities?",
                 options=list(range(0, 11)),
                 index=None,
                 horizontal=True,
@@ -171,7 +172,7 @@ with tab_avaliar:
 
             st.divider()
 
-            st.markdown("### âœï¸ 8. Qual serviÃ§o precisa de mais atenÃ§Ã£o?")
+            st.markdown("### \u270f\ufe0f 8. Qual servico precisa de mais atencao?")
             servico_atencao = st.multiselect(
                 "Selecione um ou mais:",
                 options=SERVICOS,
@@ -180,10 +181,10 @@ with tab_avaliar:
 
             st.divider()
 
-            st.markdown("### ðŸ“ˆ 9. Percebeu melhoria nos Ãºltimos 6 meses?")
+            st.markdown("### \U0001f4c8 9. Percebeu melhoria nos ultimos 6 meses?")
             percebeu_melhoria = st.radio(
-                "VocÃª percebeu alguma melhoria nos serviÃ§os de Facilities?",
-                options=["Sim", "NÃ£o", "NÃ£o tenho certeza"],
+                "Voce percebeu alguma melhoria nos servicos de Facilities?",
+                options=["Sim", "Nao", "Nao tenho certeza"],
                 index=None,
                 horizontal=True,
                 key="melhoria",
@@ -191,16 +192,16 @@ with tab_avaliar:
 
             st.divider()
 
-            st.markdown("### ðŸ’¡ 10. SugestÃµes")
+            st.markdown("### \U0001f4a1 10. Sugestoes")
             sugestoes = st.text_area(
-                "Deixe suas ideias ou sugestÃµes para aprimorar os serviÃ§os:",
+                "Deixe suas ideias ou sugestoes para aprimorar os servicos:",
                 max_chars=1000,
                 key="sugestoes",
             )
 
             st.divider()
 
-            st.markdown("### ðŸ“ LocalizaÃ§Ã£o")
+            st.markdown("### \U0001f4cd Localizacao")
             col1, col2 = st.columns(2)
 
             with col1:
@@ -213,19 +214,19 @@ with tab_avaliar:
                 if estado:
                     municipios = ibge.listar_municipios(estado_options[estado])
                     mun_nomes = [m["nome"] for m in municipios]
-                    municipio = st.selectbox("MunicÃ­pio:", [""] + mun_nomes)
+                    municipio = st.selectbox("Municipio:", [""] + mun_nomes)
                 else:
-                    st.selectbox("MunicÃ­pio:", ["Selecione o estado primeiro"])
+                    st.selectbox("Municipio:", ["Selecione o estado primeiro"])
 
             st.divider()
 
             submitted = st.form_submit_button(
-                "âœ… Enviar AvaliaÃ§Ã£o", use_container_width=True, type="primary"
+                "\u2705 Enviar Avaliacao", use_container_width=True, type="primary"
             )
 
             if submitted:
                 if not estado:
-                    st.error("âš ï¸ Selecione seu estado.")
+                    st.error("\u26a0\ufe0f Selecione seu estado.")
                 else:
                     dados = {
                         "transporte_nota": transporte_nota,
@@ -250,25 +251,25 @@ with tab_avaliar:
                     }
                     if smartsheet.enviar_avaliacao(dados):
                         st.session_state.ja_respondeu = True
-                        st.success("âœ… AvaliaÃ§Ã£o enviada com sucesso!")
+                        st.success("\u2705 Avaliacao enviada com sucesso!")
                         st.balloons()
                         st.rerun()
                     else:
-                        st.error("âŒ Erro ao enviar. Tente novamente.")
+                        st.error("\u274c Erro ao enviar. Tente novamente.")
 
 with tab_resultados:
-    st.subheader("ðŸ“Š Dashboard de Resultados")
+    st.subheader("\U0001f4ca Dashboard de Resultados")
 
     df = smartsheet.buscar_avaliacoes()
 
     if df.empty:
-        st.info("Nenhuma avaliaÃ§Ã£o registrada ainda.")
+        st.info("Nenhuma avaliacao registrada ainda.")
     else:
         notas_cols = [
             "transporte_nota", "portaria_nota", "vigilancia_nota",
             "limpeza_nota", "jardinagem_nota", "refeicao_nota"
         ]
-        notas_labels = ["Transporte", "Portaria", "VigilÃ¢ncia", "Limpeza", "Jardinagem", "RefeiÃ§Ã£o"]
+        notas_labels = ["Transporte", "Portaria", "Vigilancia", "Limpeza", "Jardinagem", "Refeicao"]
 
         for col in notas_cols:
             if col in df.columns:
@@ -282,11 +283,11 @@ with tab_resultados:
             st.metric("Total Respostas", len(df))
         with col2:
             media_geral = df[notas_cols].mean().mean()
-            st.metric("MÃ©dia Geral", f"{media_geral:.1f}/5")
+            st.metric("Media Geral", f"{media_geral:.1f}/5")
         with col3:
             if "nps" in df.columns:
                 nps_medio = df["nps"].mean()
-                st.metric("NPS MÃ©dio", f"{nps_medio:.1f}/10")
+                st.metric("NPS Medio", f"{nps_medio:.1f}/10")
         with col4:
             melhor_idx = df[notas_cols].mean().idxmax()
             melhor_servico = notas_labels[notas_cols.index(melhor_idx)]
@@ -298,11 +299,11 @@ with tab_resultados:
 
         config_radar = {
             "chart": {"polar": True, "type": "line"},
-            "title": {"text": "SatisfaÃ§Ã£o por ServiÃ§o"},
+            "title": {"text": "Satisfacao por Servico"},
             "pane": {"size": "85%"},
             "xAxis": {"categories": notas_labels, "tickmarkPlacement": "on"},
             "yAxis": {"gridLineInterpolation": "polygon", "min": 0, "max": 5},
-            "series": [{"name": "MÃ©dia", "data": medias, "pointPlacement": "on"}],
+            "series": [{"name": "Media", "data": medias, "pointPlacement": "on"}],
         }
         charts.render_chart(config_radar, height=500)
 
@@ -331,13 +332,13 @@ with tab_resultados:
                 st.metric("NPS Score", f"{nps_score:.0f}")
 
         if "servico_atencao" in df.columns:
-            st.markdown("### ServiÃ§o que Precisa de Mais AtenÃ§Ã£o")
+            st.markdown("### Servico que Precisa de Mais Atencao")
             atencao_list = df["servico_atencao"].dropna().str.split(", ").explode()
             if not atencao_list.empty:
                 contagem = atencao_list.value_counts()
                 config_atencao = {
                     "chart": {"type": "bar"},
-                    "title": {"text": "ServiÃ§os que Precisam de Mais AtenÃ§Ã£o"},
+                    "title": {"text": "Servicos que Precisam de Mais Atencao"},
                     "xAxis": {"categories": contagem.index.tolist()},
                     "yAxis": {"title": {"text": "Votos"}},
                     "series": [{"name": "Respostas", "data": [int(v) for v in contagem.values], "showInLegend": False}],
@@ -346,11 +347,11 @@ with tab_resultados:
                 charts.render_chart(config_atencao)
 
         if "percebeu_melhoria" in df.columns:
-            st.markdown("### Percebeu Melhoria nos Ãšltimos 6 Meses?")
+            st.markdown("### Percebeu Melhoria nos Ultimos 6 Meses?")
             melhoria_count = df["percebeu_melhoria"].value_counts()
             config_melhoria = {
                 "chart": {"type": "pie"},
-                "title": {"text": "PercepÃ§Ã£o de Melhoria"},
+                "title": {"text": "Percepcao de Melhoria"},
                 "plotOptions": {"pie": {"innerSize": "50%", "dataLabels": {"enabled": True, "format": "{point.name}: {point.percentage:.1f}%"}}},
                 "series": [{"name": "Respostas", "data": [
                     {"name": str(nome), "y": int(qtd)} for nome, qtd in melhoria_count.items()
