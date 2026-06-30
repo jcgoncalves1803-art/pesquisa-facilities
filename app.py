@@ -18,15 +18,18 @@ col_a, col_b, col_c = st.columns([1, 1, 1])
 with col_b:
     st.image("logo.png", width=200)
 
-# Header estilo banner azul com borda verde
+# Header estilo banner azul com borda verde e badge anonimo
 st.markdown(
     """
 <div style="background: linear-gradient(135deg, #0033a0, #001a5c); padding:30px 40px;
      border-radius:12px; border-left:6px solid #00a651; margin-bottom:25px;">
-    <h1 style="color:white; margin:0;">\U0001f4cb Pesquisa de Satisfacao</h1>
-    <p style="color:#ccc; margin:5px 0 0 0; font-size:1em;">
-        Syngenta Brasil \u00b7 Servicos de Facilities \u00b7 1o Semestre 2026
+    <h1 style="color:white; margin:0;">Pesquisa de Satisfa&#231;&#227;o</h1>
+    <p style="color:#ccc; margin:5px 0 15px 0; font-size:1em;">
+        Syngenta Brasil &#183; Servi&#231;os de Facilities &#183; 1&#186; Semestre 2026
     </p>
+    <span style="background:#00a651; padding:5px 15px; border-radius:20px; font-size:0.85em; color:white;">
+        &#128274; 100% An&#244;nimo
+    </span>
 </div>
 """,
     unsafe_allow_html=True,
@@ -46,7 +49,7 @@ ESCALA = {
 
 SERVICOS = ["Transporte", "Portaria", "Vigilancia", "Limpeza", "Jardinagem", "Refeicao"]
 
-tab_avaliar, tab_resultados = st.tabs(["\U0001f4dd Avaliar", "\U0001f4ca Resultados"])
+tab_avaliar, tab_resultados = st.tabs(["\U0001f4dd Formulario de Avaliacao", "\U0001f4ca Painel de Resultados"])
 
 with tab_avaliar:
     if "ja_respondeu" not in st.session_state:
@@ -57,15 +60,11 @@ with tab_avaliar:
         st.info("Cada pessoa pode responder apenas uma vez.")
     else:
         st.markdown("""
-        <div style="background:#001a5c; color:white; padding:10px 20px; border-radius:8px; margin-bottom:20px;">
+        <div style="background:#f0f2f6; padding:15px 20px; border-radius:8px; border-left:4px solid #00a651; margin-bottom:20px;">
             <strong>Prezado(a) colaborador(a),</strong><br><br>
-            Sua opiniao e essencial para a melhoria continua dos nossos servicos de Facilities.
+            Sua opini&#227;o &#233; essencial para a melhoria cont&#237;nua dos nossos servi&#231;os de Facilities.
             Por favor, avalie os aspectos abaixo utilizando a seguinte escala:<br><br>
-            <span style="background:#00a651; padding:4px 12px; border-radius:15px; font-size:0.85em;">
-                \U0001f512 100% Anonimo
-            </span>
-            <br><br>
-            \u2705 1 - Muito insatisfeito | 2 - Insatisfeito | 3 - Neutro | 4 - Satisfeito | 5 - Muito satisfeito
+            &#9989; 1 - Muito insatisfeito | 2 - Insatisfeito | 3 - Neutro | 4 - Satisfeito | 5 - Muito satisfeito
         </div>
         """, unsafe_allow_html=True)
 
