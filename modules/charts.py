@@ -180,19 +180,24 @@ class HighchartsRenderer:
         }
         HighchartsRenderer.render_chart(config)
 
-    @staticmethod
-    def ranking_barras(fornecedores, medias):
-        colors = ["#4CAF50", "#2196F3", "#FF9800", "#9C27B0", "#E91E63", "#00BCD4"]
+       @staticmethod
+    def bar_race(dados_servicos):
+        dados_ordenados = sorted(dados_servicos.items(), key=lambda x: x[1], reverse=True)
+        categorias = [d[0] for d in dados_ordenados]
+        valores = [round(d[1], 2) for d in dados_ordenados]
+        cores = ["#4CAF50", "#2196F3", "#FF9800", "#9C27B0", "#E91E63", "#00BCD4"]
+        data = [
+            {"name": cat, "y": val, "color": cores[i % 6]}
+            for i, (cat, val) in enumerate(zip(categorias, valores))
+        ]
         config = {
-            "chart": {"type": "bar"},
-            "title": {"text": "Ranking de Satisfacao"},
-            "xAxis": {"categories": fornecedores},
-            "yAxis": {"min": 0, "max": 5, "title": {"text": "Media"}},
-            "series": [{
-                "name": "Media",
-                "data": [{"y": m, "color": colors[i % 6]} for i, m in enumerate(medias)],
-                "showInLegend": False,
-            }],
-            "plotOptions": {"bar": {"borderRadius": 5, "dataLabels": {"enabled": True}}}
+            "chart": {"type": "bar", "animation": {"duration": 1500}},
+            "title": {"text": "Ranking de Satisfacao - Servicos"},
+            "subtitle": {"text": "Ordenado por nota media"},
+            "xAxis": {"categories": categorias, "title": None},
+            "yAxis": {"min": 0, "max": 5, "title": {"text": "Nota Media"}},
+            "legend": {"enabled": False},
+            "plotOptions": {"bar": {"borderRadius": 8, "dataLabels": {"enabled": True, "format": "{point.y:.1f}"}, "groupPadding": 0.1}},
+            "series": [{"name": "Nota Media", "data": data}]
         }
-        HighchartsRenderer.render_chart(config)
+        HighchartsRenderer.render_chart(config, height=400)
