@@ -14,10 +14,16 @@ st.set_page_config(
 
 st.markdown(
     """
-<div style="text-align:center; padding:20px; background:linear-gradient(135deg,#1a1a2e,#0f3460);
-     color:white; border-radius:12px; margin-bottom:25px;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Syngenta_Logo.svg/1200px-Syngenta_Logo.svg.png"
-         alt="Syngenta" style="height:50px; margin-bottom:15px;"> 
+<div style="text-align:center; padding:20px; background:linear-gradient(135deg,#1a1a2e,#0f3460); color:white; border-radius:12px; margin-bottom:25px;">
+    <img src="https://logospng.org/download/syngenta/syngenta-4096.png" alt="Syngenta" style="height:50px; margin-bottom:15px;">
+    <h1>Pesquisa de Satisfacao</h1>
+    <h3>Servicos de Facilities | 1 Semestre 2026</h3>
+    <p>Avalie sua satisfacao com transporte, portaria, vigilancia, limpeza, jardinagem e refeicao</p>
+    <span style="background:#28a745; padding:5px 15px; border-radius:20px; font-size:0.85em;">100% Anonimo</span>
+</div>
+""",
+    unsafe_allow_html=True,
+)
          
              <h1>Pesquisa de Satisfação</h1>
     <h3>Serviços de Facilities | 1º Semestre 2026</h3>
