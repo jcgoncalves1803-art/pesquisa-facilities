@@ -337,6 +337,15 @@ with tab_resultados:
                     "plotOptions": {"bar": {"borderRadius": 5, "dataLabels": {"enabled": True}}},
                 }
                 charts.render_chart(config_atencao)
+                
+        # Bar Race - Ranking
+        st.markdown("### 🏆 Ranking de Satisfação")
+        dados_servicos = {}
+        for label, col in zip(notas_labels, notas_cols):
+            if col in df.columns:
+                dados_servicos[label] = round(df[col].mean(), 2)
+        if dados_servicos:
+            charts.bar_race(dados_servicos)
 
         if "percebeu_melhoria" in df.columns:
             st.markdown("### Percebeu Melhoria nos Ultimos 6 Meses?")
