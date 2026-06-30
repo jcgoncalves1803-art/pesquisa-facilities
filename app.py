@@ -13,16 +13,25 @@ st.set_page_config(
     layout="wide",
 )
 
+# Logo Syngenta centralizada
 st.markdown(
     """
-<div style="text-align:center; padding:20px; background:linear-gradient(135deg,#1a1a2e,#0f3460);
-     color:white; border-radius:12px; margin-bottom:25px;">
-    <h1>&#128203; Pesquisa de Satisfa&#231;&#227;o</h1>
-    <h3>Servi&#231;os de Facilities | 1&#186; Semestre 2026</h3>
-    <p>Avalie sua satisfa&#231;&#227;o com transporte, portaria, vigil&#226;ncia, limpeza, jardinagem e refei&#231;&#227;o</p>
-    <span style="background:#28a745; padding:5px 15px; border-radius:20px; font-size:0.85em;">
-        &#128274; 100% An&#244;nimo
-    </span>
+    <div style="text-align:center; margin-bottom:10px;">
+        <img src="https://www.syngenta.com.br/themes/theme_flavor/img/logo-syngenta.svg" width="200">
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Header estilo banner azul com borda verde
+st.markdown(
+    """
+<div style="background: linear-gradient(135deg, #0033a0, #001a5c); padding:30px 40px;
+     border-radius:12px; border-left:6px solid #00a651; margin-bottom:25px;">
+    <h1 style="color:white; margin:0;">\U0001f4cb Pesquisa de Satisfacao</h1>
+    <p style="color:#ccc; margin:5px 0 0 0; font-size:1em;">
+        Syngenta Brasil \u00b7 Servicos de Facilities \u00b7 1o Semestre 2026
+    </p>
 </div>
 """,
     unsafe_allow_html=True,
@@ -53,13 +62,17 @@ with tab_avaliar:
         st.info("Cada pessoa pode responder apenas uma vez.")
     else:
         st.markdown("""
-        **Prezado(a) colaborador(a),**
-
-        Sua opiniao e essencial para a melhoria continua dos nossos servicos de Facilities.
-        Por favor, avalie os aspectos abaixo utilizando a seguinte escala:
-
-        \u2705 1 - Muito insatisfeito | 2 - Insatisfeito | 3 - Neutro | 4 - Satisfeito | 5 - Muito satisfeito
-        """)
+        <div style="background:#001a5c; color:white; padding:10px 20px; border-radius:8px; margin-bottom:20px;">
+            <strong>Prezado(a) colaborador(a),</strong><br><br>
+            Sua opiniao e essencial para a melhoria continua dos nossos servicos de Facilities.
+            Por favor, avalie os aspectos abaixo utilizando a seguinte escala:<br><br>
+            <span style="background:#00a651; padding:4px 12px; border-radius:15px; font-size:0.85em;">
+                \U0001f512 100% Anonimo
+            </span>
+            <br><br>
+            \u2705 1 - Muito insatisfeito | 2 - Insatisfeito | 3 - Neutro | 4 - Satisfeito | 5 - Muito satisfeito
+        </div>
+        """, unsafe_allow_html=True)
 
         st.divider()
 
