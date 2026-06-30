@@ -13,11 +13,11 @@ st.set_page_config(
     layout="wide",
 )
 
-    # Logo Syngenta centralizada
-    col_a, col_b, col_c = st.columns([1, 1, 1])
-    with col_b:
-        st.image("logo.png", width=200)
-    
+# Logo Syngenta centralizada
+col_a, col_b, col_c = st.columns([1, 1, 1])
+with col_b:
+    st.image("logo.png", width=200)
+
 # Header estilo banner azul com borda verde
 st.markdown(
     """
