@@ -12,13 +12,14 @@ st.set_page_config(
     layout="amplo",
 )
 
-st.markdown("""<div style="text-align:center; padding:20px; background:linear-gradient(135deg,#1a1a2e,#0f3460); color:white; border-radius:12px; margin-bottom:25px;">
-<img src="https://logospng.org/download/syngenta/syngenta-4096.png" alt="Syngenta" style="height:50px; margin-bottom:15px;">
-<h1>Pesquisa de Satisfação</h1>
-<h3>Serviços de Instalações | 1º semestre de 2026</h3>
-<p>Avalie sua satisfação com transporte, portaria, vigilância, limpeza, jardinagem e refeicao</p>
-<span style="background:#28a745; padding:5px 15px; border-radius:20px; font-size:0.85em;">100% Anônimo</span>
-</div>""", unsafe_allow_html=True)
+header_html = '<div style="text-align:center; padding:20px; background:linear-gradient(135deg,#1a1a2e,#0f3460); color:white; border-radius:12px; margin-bottom:25px;">'
+header_html += '<img src="https://logospng.org/download/syngenta/syngenta-4096.png" alt="Syngenta" style="height:50px; margin-bottom:15px;">'
+header_html += '<h1>Pesquisa de Satisfação</h1>'
+header_html += '<h3>Serviços de Instalações | 1º semestre de 2026</h3>'
+header_html += '<p>Avalie sua satisfação com transporte, portaria, vigilância, limpeza, jardinagem e refeicao</p>'
+header_html += '<span style="background:#28a745; padding:5px 15px; border-radius:20px; font-size:0.85em;">100% Anônimo</span>'
+header_html += '</div>'
+st.markdown(header_html, unsafe_allow_html=True)
 
 smartsheet = SmartsheetManager()
 ibge = IBGEService()
@@ -34,7 +35,7 @@ ESCALA = {
 
 SERVICOS = ["Transporte", "Portaria", "Vigilancia", "Limpeza", "Jardinagem", "Refeicao"]
 
-tab_avaliar, tab_resultados = st.tabs(["ðŸ“ Avaliar", "ðŸ“Š Resultados"])
+tab_avaliar, tab_resultados = st.tabs(["Avaliar", "Resultados"])
 
 com tab_avaliar:
     se "ja_respondeu" não estiver em st.session_state:
@@ -44,14 +45,10 @@ com tab_avaliar:
         st.success("Você já está com inveja de sua avaliação. Obrigado pela participação!")
         st.info("Cada pessoa pode responder apenas uma vez.")
     outro:
-        st.markdown("""
-**Prezado(a) colaborador(a),**
-
-Sua opinião é essencial para a melhoria contínua de nossos serviços de Facilities.
-Por favor, avalie os aspectos abaixo utilizando a seguinte escala:
-
-1 - Muito insatisfeito | 2 - Insatisfeito | 3 - Neutro | 4 - Satisfeito | 5 - Muito satisfeito
-"")
+        st.markdown("**Prezado(a) colaborador(a),**")
+        st.markdown("Sua opinião e essencial para a melhoria contínua dos nossos serviços de Facilities.")
+        st.markdown("Por favor, avalie os aspectos abaixo utilizando a seguinte escala:")
+        st.markdown("1 - Muito insatisfeito | 2 - Insatisfeito | 3 - Neutro | 4 - Satisfeito | 5 - Muito satisfeito")
 
         st.divider()
 
@@ -306,7 +303,6 @@ com tab_resultados:
             charts.bar_race(dados_servicos)
 
         se "servico_atencao" em df.columns:
-            st.markdown("### Serviço que Precisa de Mais Atenção")
             atencao_list = df["servico_atencao"].dropna().str.split(", ").explode()
             se não atencao_list.empty:
                 contagem = atencao_list.value_counts()
@@ -321,7 +317,6 @@ com tab_resultados:
                 charts.render_chart(config_atencao)
 
         if "percebeu_melhoria" em df.columns:
-            st.markdown("### Percebeu Melhoria nos Últimos 6 Meses?")
             melhoria_count = df["percebeu_melhoria"].value_counts()
             config_melhoria = {
                 "gráfico": {"tipo": "pizza"},
