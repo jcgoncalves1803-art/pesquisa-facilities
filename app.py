@@ -65,6 +65,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+col1, col2, col3 = st.columns([1, 2, 1])
+
+with col2:
+    st.image("assets/logo_syngenta.png", width=230)
+
 st.markdown(
     """
     <div class="main-header">
