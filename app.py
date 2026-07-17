@@ -118,7 +118,7 @@ ESCALA_1_5 = {
 
 SERVICOS_ATENCAO = [
     "Portaria",
-    "Transporte",
+    "Fretado",
     "Refeição",
     "Limpeza",
     "Jardinagem",
@@ -188,10 +188,10 @@ with tab_formulario:
         # -----------------------------
         # TRANSPORTE
         # -----------------------------
-        st.markdown("### 🚌 Transporte")
+        st.markdown("### 🚌 Transporte de Colaboradores (Fretado)")
 
         transporte_pontualidade_nota = st.radio(
-            "Como você avalia a pontualidade do transporte?",
+            "Como você avalia a pontualidade do transporte de colaboradores?",
             options=[1, 2, 3, 4, 5],
             index=None,
             format_func=lambda x: ESCALA_1_5[x],
@@ -209,7 +209,7 @@ with tab_formulario:
         )
 
         transporte_comentarios = st.text_area(
-            "Compartilhe seus comentários ou sugestões sobre o serviço de transporte:",
+            "Compartilhe seus comentários ou sugestões sobre o serviço de transporte de colaboradores:",
             placeholder="Insira sua resposta",
             max_chars=1000,
             key="transporte_comentarios",
@@ -411,14 +411,23 @@ with tab_formulario:
                 "Conservação das áreas externas e jardins": jardinagem_areas_externas_nota,
                 "Satisfação geral 0 a 10": nps_satisfacao_geral,
                 "Avaliação geral de Facilities": facilities_geral_nota,
+                "Serviço que precisa de mais atenção": servico_precisa_atencao,
+                "Comentários e sugestões gerais": comentarios_sugestoes,
                 "Estado": estado,
                 "Município": municipio,
             }
 
-            pendentes = [nome for nome, valor in campos_obrigatorios.items() if valor in [None, ""]]
+            pendentes = [
+                nome
+                for nome, valor in campos_obrigatorios.items()
+                if valor in [None, "", []]
+            ]
 
             if pendentes:
-                st.error("⚠️ Preencha os campos obrigatórios antes de enviar: " + ", ".join(pendentes))
+                st.error(
+                    "⚠️ Preencha os campos obrigatórios antes de enviar: "
+                    + ", ".join(pendentes)
+                )
             else:
                 dados = {
                     "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -438,7 +447,9 @@ with tab_formulario:
                     "limpeza_jardinagem_comentarios": limpeza_jardinagem_comentarios,
                     "nps_satisfacao_geral": nps_satisfacao_geral,
                     "facilities_geral_nota": facilities_geral_nota,
-                    "servico_precisa_atencao": ", ".join(servico_precisa_atencao) if servico_precisa_atencao else "",
+                    "servico_precisa_atencao": ", ".join(servico_precisa_atencao)
+                    if servico_precisa_atencao
+                    else "",
                     "comentarios_sugestoes": comentarios_sugestoes,
                 }
 
@@ -448,7 +459,9 @@ with tab_formulario:
                     st.balloons()
                     st.rerun()
                 else:
-                    st.error("❌ Erro ao enviar a avaliação. Verifique a conexão com o Smartsheet e os nomes das colunas.")
+                    st.error(
+                        "❌ Erro ao enviar a avaliação. Verifique a conexão com o Smartsheet e os nomes das colunas."
+                    )
 
 
 # =====================================================
@@ -470,7 +483,9 @@ with tab_resultados:
 
         if st.button("Acessar painel", type="primary"):
             if not PAINEL_SENHA:
-                st.error("Senha do painel não configurada. Adicione PAINEL_SENHA no arquivo config.py.")
+                st.error(
+                    "Senha do painel não configurada. Adicione PAINEL_SENHA no arquivo config.py."
+                )
             elif senha_digitada == PAINEL_SENHA:
                 st.session_state.painel_liberado = True
                 st.rerun()
@@ -492,10 +507,14 @@ with tab_resultados:
                 df[col] = pd.to_numeric(df[col], errors="coerce")
 
         if "nps_satisfacao_geral" in df.columns:
-            df["nps_satisfacao_geral"] = pd.to_numeric(df["nps_satisfacao_geral"], errors="coerce")
+            df["nps_satisfacao_geral"] = pd.to_numeric(
+                df["nps_satisfacao_geral"], errors="coerce"
+            )
 
         colunas_existentes = [col for col in COLUNAS_NOTA if col in df.columns]
-        labels_existentes = [LABELS_NOTA[COLUNAS_NOTA.index(col)] for col in colunas_existentes]
+        labels_existentes = [
+            LABELS_NOTA[COLUNAS_NOTA.index(col)] for col in colunas_existentes
+        ]
 
         col1, col2, col3, col4 = st.columns(4)
 
@@ -527,10 +546,12 @@ with tab_resultados:
 
         if colunas_existentes:
             medias = [round(df[col].mean(), 2) for col in colunas_existentes]
-            ranking = pd.DataFrame({
-                "Item avaliado": labels_existentes,
-                "Nota média": medias,
-            }).sort_values("Nota média", ascending=False)
+            ranking = pd.DataFrame(
+                {
+                    "Item avaliado": labels_existentes,
+                    "Nota média": medias,
+                }
+            ).sort_values("Nota média", ascending=False)
 
             st.markdown("### Média por item avaliado")
             st.bar_chart(ranking.set_index("Item avaliado"))
@@ -547,7 +568,11 @@ with tab_resultados:
                 neutros = len(nps_validos[(nps_validos >= 7) & (nps_validos <= 8)])
                 detratores = len(nps_validos[nps_validos <= 6])
                 total_nps = len(nps_validos)
-                nps_score = ((promotores - detratores) / total_nps) * 100 if total_nps > 0 else 0
+                nps_score = (
+                    ((promotores - detratores) / total_nps) * 100
+                    if total_nps > 0
+                    else 0
+                )
 
                 c1, c2, c3, c4 = st.columns(4)
                 with c1:
@@ -565,7 +590,13 @@ with tab_resultados:
         if "servico_precisa_atencao" in df.columns:
             st.markdown("### Serviços que precisam de mais atenção")
 
-            atencao = df["servico_precisa_atencao"].dropna().astype(str).str.split(", ").explode()
+            atencao = (
+                df["servico_precisa_atencao"]
+                .dropna()
+                .astype(str)
+                .str.split(", ")
+                .explode()
+            )
             atencao = atencao[atencao != ""]
 
             if not atencao.empty:
