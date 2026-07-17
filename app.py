@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -65,10 +66,18 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-col1, col2, col3 = st.columns([1, 2, 1])
+LOGO_PATH = "assets/logo_syngenta.png"
 
-with col2:
-    st.image("assets/logo_syngenta.png", width=230)
+try:
+    if os.path.exists(LOGO_PATH):
+        col1, col2, col3 = st.columns([1, 2, 1])
+
+        with col2:
+            st.image(LOGO_PATH, width=230)
+    else:
+        st.warning("Logo não encontrada. Verifique se o arquivo está em assets/logo_syngenta.png")
+except Exception as e:
+    st.warning("Não foi possível carregar a logo. Verifique se o arquivo é uma imagem válida.")
 
 st.markdown(
     """
