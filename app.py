@@ -66,19 +66,26 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
+# =====================================================
+# LOGO
+# =====================================================
 LOGO_PATH = "assets/logo_syngenta.png"
 
 try:
     if os.path.exists(LOGO_PATH):
         col1, col2, col3 = st.columns([1, 2, 1])
-
         with col2:
             st.image(LOGO_PATH, width=230)
     else:
         st.warning("Logo não encontrada. Verifique se o arquivo está em assets/logo_syngenta.png")
-except Exception as e:
+except Exception:
     st.warning("Não foi possível carregar a logo. Verifique se o arquivo é uma imagem válida.")
 
+
+# =====================================================
+# CABEÇALHO
+# =====================================================
 st.markdown(
     """
     <div class="main-header">
@@ -178,236 +185,270 @@ with tab_formulario:
             unsafe_allow_html=True,
         )
 
-        with st.form("form_pesquisa_facilities", clear_on_submit=True):
-            st.markdown("### 🚌 Transporte")
+        # -----------------------------
+        # TRANSPORTE
+        # -----------------------------
+        st.markdown("### 🚌 Transporte")
 
-            transporte_pontualidade_nota = st.radio(
-                "Como você avalia a pontualidade do transporte?",
-                options=[1, 2, 3, 4, 5],
-                index=None,
-                format_func=lambda x: ESCALA_1_5[x],
-                horizontal=True,
-                key="transporte_pontualidade_nota",
+        transporte_pontualidade_nota = st.radio(
+            "Como você avalia a pontualidade do transporte?",
+            options=[1, 2, 3, 4, 5],
+            index=None,
+            format_func=lambda x: ESCALA_1_5[x],
+            horizontal=True,
+            key="transporte_pontualidade_nota",
+        )
+
+        transporte_conforto_limpeza_nota = st.radio(
+            "Como você avalia o conforto e a limpeza dos veículos?",
+            options=[1, 2, 3, 4, 5],
+            index=None,
+            format_func=lambda x: ESCALA_1_5[x],
+            horizontal=True,
+            key="transporte_conforto_limpeza_nota",
+        )
+
+        transporte_comentarios = st.text_area(
+            "Compartilhe seus comentários ou sugestões sobre o serviço de transporte:",
+            placeholder="Insira sua resposta",
+            max_chars=1000,
+            key="transporte_comentarios",
+        )
+
+        st.divider()
+
+        # -----------------------------
+        # PORTARIA
+        # -----------------------------
+        st.markdown("### 🚪 Portaria")
+
+        portaria_atendimento_nota = st.radio(
+            "Como você avalia o atendimento da portaria?",
+            options=[1, 2, 3, 4, 5],
+            index=None,
+            format_func=lambda x: ESCALA_1_5[x],
+            horizontal=True,
+            key="portaria_atendimento_nota",
+        )
+
+        portaria_controle_acesso_seguranca_nota = st.radio(
+            "Como você avalia o controle de acesso e a segurança no site?",
+            options=[1, 2, 3, 4, 5],
+            index=None,
+            format_func=lambda x: ESCALA_1_5[x],
+            horizontal=True,
+            key="portaria_controle_acesso_seguranca_nota",
+        )
+
+        portaria_comentarios = st.text_area(
+            "Compartilhe sua opinião sobre a portaria: elogios, críticas ou sugestões.",
+            placeholder="Insira sua resposta",
+            max_chars=1000,
+            key="portaria_comentarios",
+        )
+
+        st.divider()
+
+        # -----------------------------
+        # REFEIÇÃO
+        # -----------------------------
+        st.markdown("### 🍽️ Refeição")
+
+        refeicao_qualidade_nota = st.radio(
+            "Como você avalia a qualidade das refeições servidas?",
+            options=[1, 2, 3, 4, 5],
+            index=None,
+            format_func=lambda x: ESCALA_1_5[x],
+            horizontal=True,
+            key="refeicao_qualidade_nota",
+        )
+
+        refeicao_variedade_cardapio_nota = st.radio(
+            "Como você avalia a variedade do cardápio oferecido?",
+            options=[1, 2, 3, 4, 5],
+            index=None,
+            format_func=lambda x: ESCALA_1_5[x],
+            horizontal=True,
+            key="refeicao_variedade_cardapio_nota",
+        )
+
+        refeicao_comentarios = st.text_area(
+            "Compartilhe sua opinião sobre as refeições: elogios, críticas ou sugestões.",
+            placeholder="Insira sua resposta",
+            max_chars=1000,
+            key="refeicao_comentarios",
+        )
+
+        st.divider()
+
+        # -----------------------------
+        # LIMPEZA E JARDINAGEM
+        # -----------------------------
+        st.markdown("### 🧹 Limpeza e Jardinagem")
+
+        limpeza_instalacoes_nota = st.radio(
+            "Como você avalia a limpeza das instalações, como escritórios, banheiros e áreas comuns?",
+            options=[1, 2, 3, 4, 5],
+            index=None,
+            format_func=lambda x: ESCALA_1_5[x],
+            horizontal=True,
+            key="limpeza_instalacoes_nota",
+        )
+
+        jardinagem_areas_externas_nota = st.radio(
+            "Como você avalia a conservação das áreas externas e jardins?",
+            options=[1, 2, 3, 4, 5],
+            index=None,
+            format_func=lambda x: ESCALA_1_5[x],
+            horizontal=True,
+            key="jardinagem_areas_externas_nota",
+        )
+
+        limpeza_jardinagem_comentarios = st.text_area(
+            "Compartilhe sua opinião sobre limpeza e jardinagem: elogios, críticas ou sugestões.",
+            placeholder="Insira sua resposta",
+            max_chars=1000,
+            key="limpeza_jardinagem_comentarios",
+        )
+
+        st.divider()
+
+        # -----------------------------
+        # AVALIAÇÃO GERAL
+        # -----------------------------
+        st.markdown("### 📋 Avaliação Geral")
+
+        nps_satisfacao_geral = st.radio(
+            "Em uma escala de 0 a 10, onde 0 significa 'nada satisfeita(o)' e 10 'extremamente satisfeita(o)', qual é sua satisfação geral com os serviços de Facilities?",
+            options=list(range(0, 11)),
+            index=None,
+            horizontal=True,
+            key="nps_satisfacao_geral",
+        )
+
+        facilities_geral_nota = st.radio(
+            "Como você avalia os serviços de Facilities de forma geral?",
+            options=[1, 2, 3, 4, 5],
+            index=None,
+            format_func=lambda x: ESCALA_1_5[x],
+            horizontal=True,
+            key="facilities_geral_nota",
+        )
+
+        servico_precisa_atencao = st.multiselect(
+            "Na sua opinião, quais serviços precisam de mais atenção ou melhorias?",
+            options=SERVICOS_ATENCAO,
+            key="servico_precisa_atencao",
+        )
+
+        st.divider()
+
+        # -----------------------------
+        # COMENTÁRIOS GERAIS
+        # -----------------------------
+        st.markdown("### 💬 Comentários e Sugestões")
+
+        comentarios_sugestoes = st.text_area(
+            "Deixe aqui seus comentários, elogios ou sugestões de melhoria:",
+            placeholder="Insira sua resposta",
+            max_chars=1500,
+            key="comentarios_sugestoes",
+        )
+
+        st.divider()
+
+        # -----------------------------
+        # LOCALIZAÇÃO NO FINAL
+        # Importante: fica fora de st.form para o Município carregar ao selecionar Estado.
+        # -----------------------------
+        st.markdown("### 📍 Localização")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            estados = ibge.listar_estados()
+            estado_options = {e["nome"]: e["id"] for e in estados}
+            estado = st.selectbox(
+                "Estado:",
+                [""] + list(estado_options.keys()),
+                key="estado_select",
             )
 
-            transporte_conforto_limpeza_nota = st.radio(
-                "Como você avalia o conforto e a limpeza dos veículos?",
-                options=[1, 2, 3, 4, 5],
-                index=None,
-                format_func=lambda x: ESCALA_1_5[x],
-                horizontal=True,
-                key="transporte_conforto_limpeza_nota",
-            )
-
-            transporte_comentarios = st.text_area(
-                "Compartilhe seus comentários ou sugestões sobre o serviço de transporte:",
-                placeholder="Insira sua resposta",
-                max_chars=1000,
-                key="transporte_comentarios",
-            )
-
-            st.divider()
-
-            st.markdown("### 🚪 Portaria")
-
-            portaria_atendimento_nota = st.radio(
-                "Como você avalia o atendimento da portaria?",
-                options=[1, 2, 3, 4, 5],
-                index=None,
-                format_func=lambda x: ESCALA_1_5[x],
-                horizontal=True,
-                key="portaria_atendimento_nota",
-            )
-
-            portaria_controle_acesso_seguranca_nota = st.radio(
-                "Como você avalia o controle de acesso e a segurança no site?",
-                options=[1, 2, 3, 4, 5],
-                index=None,
-                format_func=lambda x: ESCALA_1_5[x],
-                horizontal=True,
-                key="portaria_controle_acesso_seguranca_nota",
-            )
-
-            portaria_comentarios = st.text_area(
-                "Compartilhe sua opinião sobre a portaria: elogios, críticas ou sugestões.",
-                placeholder="Insira sua resposta",
-                max_chars=1000,
-                key="portaria_comentarios",
-            )
-
-            st.divider()
-
-            st.markdown("### 🍽️ Refeição")
-
-            refeicao_qualidade_nota = st.radio(
-                "Como você avalia a qualidade das refeições servidas?",
-                options=[1, 2, 3, 4, 5],
-                index=None,
-                format_func=lambda x: ESCALA_1_5[x],
-                horizontal=True,
-                key="refeicao_qualidade_nota",
-            )
-
-            refeicao_variedade_cardapio_nota = st.radio(
-                "Como você avalia a variedade do cardápio oferecido?",
-                options=[1, 2, 3, 4, 5],
-                index=None,
-                format_func=lambda x: ESCALA_1_5[x],
-                horizontal=True,
-                key="refeicao_variedade_cardapio_nota",
-            )
-
-            refeicao_comentarios = st.text_area(
-                "Compartilhe sua opinião sobre as refeições: elogios, críticas ou sugestões.",
-                placeholder="Insira sua resposta",
-                max_chars=1000,
-                key="refeicao_comentarios",
-            )
-
-            st.divider()
-
-            st.markdown("### 🧹 Limpeza e Jardinagem")
-
-            limpeza_instalacoes_nota = st.radio(
-                "Como você avalia a limpeza das instalações, como escritórios, banheiros e áreas comuns?",
-                options=[1, 2, 3, 4, 5],
-                index=None,
-                format_func=lambda x: ESCALA_1_5[x],
-                horizontal=True,
-                key="limpeza_instalacoes_nota",
-            )
-
-            jardinagem_areas_externas_nota = st.radio(
-                "Como você avalia a conservação das áreas externas e jardins?",
-                options=[1, 2, 3, 4, 5],
-                index=None,
-                format_func=lambda x: ESCALA_1_5[x],
-                horizontal=True,
-                key="jardinagem_areas_externas_nota",
-            )
-
-            limpeza_jardinagem_comentarios = st.text_area(
-                "Compartilhe sua opinião sobre limpeza e jardinagem: elogios, críticas ou sugestões.",
-                placeholder="Insira sua resposta",
-                max_chars=1000,
-                key="limpeza_jardinagem_comentarios",
-            )
-
-            st.divider()
-
-            st.markdown("### 📋 Avaliação Geral")
-
-            nps_satisfacao_geral = st.radio(
-                "Em uma escala de 0 a 10, onde 0 significa 'nada satisfeita(o)' e 10 'extremamente satisfeita(o)', qual é sua satisfação geral com os serviços de Facilities?",
-                options=list(range(0, 11)),
-                index=None,
-                horizontal=True,
-                key="nps_satisfacao_geral",
-            )
-
-            facilities_geral_nota = st.radio(
-                "Como você avalia os serviços de Facilities de forma geral?",
-                options=[1, 2, 3, 4, 5],
-                index=None,
-                format_func=lambda x: ESCALA_1_5[x],
-                horizontal=True,
-                key="facilities_geral_nota",
-            )
-
-            servico_precisa_atencao = st.multiselect(
-                "Na sua opinião, quais serviços precisam de mais atenção ou melhorias?",
-                options=SERVICOS_ATENCAO,
-                key="servico_precisa_atencao",
-            )
-
-            st.divider()
-
-            st.markdown("### 💬 Comentários e Sugestões")
-
-            comentarios_sugestoes = st.text_area(
-                "Deixe aqui seus comentários, elogios ou sugestões de melhoria:",
-                placeholder="Insira sua resposta",
-                max_chars=1500,
-                key="comentarios_sugestoes",
-            )
-
-            st.divider()
-
-            st.markdown("### 📍 Localização")
-            col1, col2 = st.columns(2)
-
-            with col1:
-                estados = ibge.listar_estados()
-                estado_options = {e["nome"]: e["id"] for e in estados}
-                estado = st.selectbox("Estado:", [""] + list(estado_options.keys()))
-
-            with col2:
+        with col2:
+            if estado:
+                municipios = ibge.listar_municipios(estado_options[estado])
+                municipio_options = [m["nome"] for m in municipios]
+                municipio = st.selectbox(
+                    "Município:",
+                    [""] + municipio_options,
+                    key="municipio_select",
+                )
+            else:
                 municipio = ""
-                if estado:
-                    municipios = ibge.listar_municipios(estado_options[estado])
-                    municipio_options = [m["nome"] for m in municipios]
-                    municipio = st.selectbox("Município:", [""] + municipio_options)
-                else:
-                    st.selectbox("Município:", ["Selecione o estado primeiro"])
+                st.selectbox(
+                    "Município:",
+                    ["Selecione o estado primeiro"],
+                    key="municipio_select_placeholder",
+                )
 
-            st.divider()
+        st.divider()
 
-            submitted = st.form_submit_button(
-                "✅ Enviar avaliação",
-                use_container_width=True,
-                type="primary",
-            )
+        submitted = st.button(
+            "✅ Enviar avaliação",
+            use_container_width=True,
+            type="primary",
+        )
 
-            if submitted:
-                campos_obrigatorios = {
-                    "Pontualidade do transporte": transporte_pontualidade_nota,
-                    "Conforto e limpeza dos veículos": transporte_conforto_limpeza_nota,
-                    "Atendimento da portaria": portaria_atendimento_nota,
-                    "Controle de acesso e segurança": portaria_controle_acesso_seguranca_nota,
-                    "Qualidade das refeições": refeicao_qualidade_nota,
-                    "Variedade do cardápio": refeicao_variedade_cardapio_nota,
-                    "Limpeza das instalações": limpeza_instalacoes_nota,
-                    "Conservação das áreas externas e jardins": jardinagem_areas_externas_nota,
-                    "Satisfação geral 0 a 10": nps_satisfacao_geral,
-                    "Avaliação geral de Facilities": facilities_geral_nota,
-                    "Estado": estado,
-                    "Município": municipio,
+        if submitted:
+            campos_obrigatorios = {
+                "Pontualidade do transporte": transporte_pontualidade_nota,
+                "Conforto e limpeza dos veículos": transporte_conforto_limpeza_nota,
+                "Atendimento da portaria": portaria_atendimento_nota,
+                "Controle de acesso e segurança": portaria_controle_acesso_seguranca_nota,
+                "Qualidade das refeições": refeicao_qualidade_nota,
+                "Variedade do cardápio": refeicao_variedade_cardapio_nota,
+                "Limpeza das instalações": limpeza_instalacoes_nota,
+                "Conservação das áreas externas e jardins": jardinagem_areas_externas_nota,
+                "Satisfação geral 0 a 10": nps_satisfacao_geral,
+                "Avaliação geral de Facilities": facilities_geral_nota,
+                "Estado": estado,
+                "Município": municipio,
+            }
+
+            pendentes = [nome for nome, valor in campos_obrigatorios.items() if valor in [None, ""]]
+
+            if pendentes:
+                st.error("⚠️ Preencha os campos obrigatórios antes de enviar: " + ", ".join(pendentes))
+            else:
+                dados = {
+                    "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "estado": estado,
+                    "municipio": municipio,
+                    "transporte_pontualidade_nota": transporte_pontualidade_nota,
+                    "transporte_conforto_limpeza_nota": transporte_conforto_limpeza_nota,
+                    "transporte_comentarios": transporte_comentarios,
+                    "portaria_atendimento_nota": portaria_atendimento_nota,
+                    "portaria_controle_acesso_seguranca_nota": portaria_controle_acesso_seguranca_nota,
+                    "portaria_comentarios": portaria_comentarios,
+                    "refeicao_qualidade_nota": refeicao_qualidade_nota,
+                    "refeicao_variedade_cardapio_nota": refeicao_variedade_cardapio_nota,
+                    "refeicao_comentarios": refeicao_comentarios,
+                    "limpeza_instalacoes_nota": limpeza_instalacoes_nota,
+                    "jardinagem_areas_externas_nota": jardinagem_areas_externas_nota,
+                    "limpeza_jardinagem_comentarios": limpeza_jardinagem_comentarios,
+                    "nps_satisfacao_geral": nps_satisfacao_geral,
+                    "facilities_geral_nota": facilities_geral_nota,
+                    "servico_precisa_atencao": ", ".join(servico_precisa_atencao) if servico_precisa_atencao else "",
+                    "comentarios_sugestoes": comentarios_sugestoes,
                 }
 
-                pendentes = [nome for nome, valor in campos_obrigatorios.items() if valor in [None, ""]]
-
-                if pendentes:
-                    st.error("⚠️ Preencha os campos obrigatórios antes de enviar: " + ", ".join(pendentes))
+                if smartsheet.enviar_avaliacao(dados):
+                    st.session_state.ja_respondeu = True
+                    st.success("✅ Avaliação enviada com sucesso!")
+                    st.balloons()
+                    st.rerun()
                 else:
-                    dados = {
-                        "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        "estado": estado,
-                        "municipio": municipio,
-                        "transporte_pontualidade_nota": transporte_pontualidade_nota,
-                        "transporte_conforto_limpeza_nota": transporte_conforto_limpeza_nota,
-                        "transporte_comentarios": transporte_comentarios,
-                        "portaria_atendimento_nota": portaria_atendimento_nota,
-                        "portaria_controle_acesso_seguranca_nota": portaria_controle_acesso_seguranca_nota,
-                        "portaria_comentarios": portaria_comentarios,
-                        "refeicao_qualidade_nota": refeicao_qualidade_nota,
-                        "refeicao_variedade_cardapio_nota": refeicao_variedade_cardapio_nota,
-                        "refeicao_comentarios": refeicao_comentarios,
-                        "limpeza_instalacoes_nota": limpeza_instalacoes_nota,
-                        "jardinagem_areas_externas_nota": jardinagem_areas_externas_nota,
-                        "limpeza_jardinagem_comentarios": limpeza_jardinagem_comentarios,
-                        "nps_satisfacao_geral": nps_satisfacao_geral,
-                        "facilities_geral_nota": facilities_geral_nota,
-                        "servico_precisa_atencao": ", ".join(servico_precisa_atencao) if servico_precisa_atencao else "",
-                        "comentarios_sugestoes": comentarios_sugestoes,
-                    }
-
-                    if smartsheet.enviar_avaliacao(dados):
-                        st.session_state.ja_respondeu = True
-                        st.success("✅ Avaliação enviada com sucesso!")
-                        st.balloons()
-                        st.rerun()
-                    else:
-                        st.error("❌ Erro ao enviar a avaliação. Verifique a conexão com o Smartsheet e os nomes das colunas.")
+                    st.error("❌ Erro ao enviar a avaliação. Verifique a conexão com o Smartsheet e os nomes das colunas.")
 
 
 # =====================================================
