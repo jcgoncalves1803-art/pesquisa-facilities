@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import os
-import streamlit as st
-import pandas as pd
 from datetime import datetime
+
+import pandas as pd
+import streamlit as st
 
 from modules.smartsheet_api import SmartsheetManager
 from modules.ibge_api import IBGEService
@@ -14,15 +15,11 @@ except Exception:
     PAINEL_SENHA = None
 
 
-# =====================================================
-# CONFIGURAÇÃO DA PÁGINA
-# =====================================================
 st.set_page_config(
     page_title="Pesquisa de Satisfação - Facilities",
     page_icon="📋",
     layout="wide",
 )
-
 
 # =====================================================
 # ESTILO VISUAL
@@ -30,6 +27,7 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+        /* Banner principal: azul Syngenta com faixa verde */
         .main-header {
             background: linear-gradient(135deg, #003B7A 0%, #002060 100%);
             color: white;
@@ -38,14 +36,18 @@ st.markdown(
             border-left: 8px solid #00A651;
             margin-bottom: 28px;
         }
+
         .main-header h1 {
             font-size: 42px;
             margin-bottom: 12px;
         }
+
         .main-header p {
             font-size: 17px;
             margin-bottom: 18px;
         }
+
+        /* Selo verde */
         .anonymous-badge {
             background: #00A651;
             color: white;
@@ -54,6 +56,8 @@ st.markdown(
             font-weight: 600;
             display: inline-block;
         }
+
+        /* Caixa de introdução */
         .intro-box {
             background: #F5F7FA;
             border-left: 5px solid #00A651;
@@ -61,12 +65,34 @@ st.markdown(
             border-radius: 10px;
             margin-bottom: 24px;
         }
+
+        /* Botão Enviar avaliação: azul Syngenta */
+        button[kind="primary"],
+        button[data-testid="stBaseButton-primary"] {
+            background: linear-gradient(90deg, #0057A8 0%, #003B7A 100%) !important;
+            color: white !important;
+            border: 2px solid #00A651 !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+        }
+
+        /* Botão ao passar o mouse */
+        button[kind="primary"]:hover,
+        button[data-testid="stBaseButton-primary"]:hover {
+            background: #00A651 !important;
+            border-color: #00A651 !important;
+            color: white !important;
+        }
+
+        /* Aba selecionada */
+        button[data-baseweb="tab"][aria-selected="true"] {
+            color: #0057A8 !important;
+            border-bottom-color: #00A651 !important;
+        }
     </style>
     """,
     unsafe_allow_html=True,
 )
-
-
 # =====================================================
 # LOGO
 # =====================================================
@@ -74,14 +100,17 @@ LOGO_PATH = "assets/logo_syngenta.png"
 
 try:
     if os.path.exists(LOGO_PATH):
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
+        coluna_esquerda, coluna_logo, coluna_direita = st.columns([1, 1, 1])
+
+        with coluna_logo:
             st.image(LOGO_PATH, width=230)
     else:
-        st.warning("Logo não encontrada. Verifique se o arquivo está em assets/logo_syngenta.png")
+        st.warning(
+            "Logo não encontrada. Verifique se o arquivo está em "
+            "assets/logo_syngenta.png"
+        )
 except Exception:
     st.warning("Não foi possível carregar a logo. Verifique se o arquivo é uma imagem válida.")
-
 
 # =====================================================
 # CABEÇALHO
@@ -97,16 +126,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
 # =====================================================
 # INTEGRAÇÕES
 # =====================================================
 smartsheet = SmartsheetManager()
 ibge = IBGEService()
 
-
 # =====================================================
-# ESCALAS E CAMPOS
+# CONFIGURAÇÕES
 # =====================================================
 ESCALA_1_5 = {
     1: "1 - Ruim",
@@ -127,6 +154,7 @@ SERVICOS_ATENCAO = [
 COLUNAS_NOTA = [
     "transporte_pontualidade_nota",
     "transporte_conforto_limpeza_nota",
+    "seguranca_veicular_nota",
     "portaria_atendimento_nota",
     "portaria_controle_acesso_seguranca_nota",
     "refeicao_qualidade_nota",
@@ -137,8 +165,9 @@ COLUNAS_NOTA = [
 ]
 
 LABELS_NOTA = [
-    "Pontualidade do transporte",
+    "Pontualidade do fretado",
     "Conforto e limpeza dos veículos",
+    "Segurança durante o deslocamento",
     "Atendimento da portaria",
     "Controle de acesso e segurança",
     "Qualidade das refeições",
@@ -149,14 +178,33 @@ LABELS_NOTA = [
 ]
 
 
+def campo_vazio(valor):
+    if valor is None or valor == "" or valor == []:
+        return True
+
+    if isinstance(valor, str) and valor.strip() == "":
+        return True
+
+    return False
+
+
+def pergunta_nota(pergunta, key):
+    return st.radio(
+        pergunta,
+        options=[1, 2, 3, 4, 5],
+        index=None,
+        format_func=lambda x: ESCALA_1_5[x],
+        horizontal=True,
+        key=key,
+    )
+
+
 # =====================================================
 # ABAS
 # =====================================================
-tab_formulario, tab_resultados = st.tabs([
-    "📝 Formulário de Avaliação",
-    "📊 Painel de Resultados",
-])
-
+tab_formulario, tab_resultados = st.tabs(
+    ["📝 Formulário de Avaliação", "📊 Painel de Resultados"]
+)
 
 # =====================================================
 # FORMULÁRIO
@@ -167,77 +215,80 @@ with tab_formulario:
 
     if st.session_state.ja_respondeu:
         st.success("✅ Sua avaliação foi enviada com sucesso. Obrigada pela participação!")
-        st.info("Para preservar a integridade da pesquisa, cada pessoa deve responder apenas uma vez nesta sessão.")
+        st.info("Cada pessoa deve responder apenas uma vez nesta sessão.")
 
     else:
         st.markdown(
             """
             <div class="intro-box">
-                <p><strong>Prezada(o) colaboradora(or),</strong></p>
+                <p><strong>Prezado(a) colaborador(a),</strong></p>
                 <p>
-                    Sua opinião é essencial para a melhoria contínua dos nossos serviços de Facilities.
-                    Por favor, avalie os aspectos abaixo utilizando a seguinte escala:
+                    Sua opinião é essencial para a melhoria contínua dos nossos
+                    serviços de Facilities. Por favor, avalie os aspectos abaixo
+                    utilizando a seguinte escala:
                 </p>
-                <p><strong>1 = Ruim | 2 = Regular | 3 = Bom | 4 = Ótimo | 5 = Excelente</strong></p>
-                <p>Basta selecionar a opção que melhor representa sua experiência em cada pergunta.</p>
+                <p>
+                    <strong>
+                        1 = Ruim | 2 = Regular | 3 = Bom |
+                        4 = Ótimo | 5 = Excelente
+                    </strong>
+                </p>
+                <p>
+                    Basta selecionar a opção que melhor representa sua experiência
+                    em cada pergunta.
+                </p>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        # -----------------------------
-        # TRANSPORTE
-        # -----------------------------
+        # =====================================================
+        # FRETADO
+        # =====================================================
         st.markdown("### 🚌 Transporte de Colaboradores (Fretado)")
 
-        transporte_pontualidade_nota = st.radio(
+        transporte_pontualidade_nota = pergunta_nota(
             "Como você avalia a pontualidade do transporte de colaboradores?",
-            options=[1, 2, 3, 4, 5],
-            index=None,
-            format_func=lambda x: ESCALA_1_5[x],
-            horizontal=True,
-            key="transporte_pontualidade_nota",
+            "transporte_pontualidade_nota",
         )
 
-        transporte_conforto_limpeza_nota = st.radio(
+        transporte_conforto_limpeza_nota = pergunta_nota(
             "Como você avalia o conforto e a limpeza dos veículos?",
-            options=[1, 2, 3, 4, 5],
-            index=None,
-            format_func=lambda x: ESCALA_1_5[x],
-            horizontal=True,
-            key="transporte_conforto_limpeza_nota",
+            "transporte_conforto_limpeza_nota",
+        )
+
+        seguranca_veicular_nota = pergunta_nota(
+            "Como você avalia sua sensação de segurança durante o deslocamento no fretado?",
+            "seguranca_veicular_nota",
         )
 
         transporte_comentarios = st.text_area(
-            "Compartilhe seus comentários ou sugestões sobre o serviço de transporte de colaboradores:",
+            "Compartilhe seus comentários ou sugestões sobre o serviço de fretado:",
             placeholder="Insira sua resposta",
             max_chars=1000,
             key="transporte_comentarios",
         )
 
-        st.divider()
-
-        # -----------------------------
-        # PORTARIA
-        # -----------------------------
-        st.markdown("### 🚪 Portaria")
-
-        portaria_atendimento_nota = st.radio(
-            "Como você avalia o atendimento da portaria?",
-            options=[1, 2, 3, 4, 5],
-            index=None,
-            format_func=lambda x: ESCALA_1_5[x],
-            horizontal=True,
-            key="portaria_atendimento_nota",
+        st.info(
+            "Em caso de situação de risco imediato, utilize os canais de segurança "
+            "definidos no site. Esta pesquisa não substitui o reporte formal."
         )
 
-        portaria_controle_acesso_seguranca_nota = st.radio(
+        st.divider()
+
+        # =====================================================
+        # PORTARIA
+        # =====================================================
+        st.markdown("### 🚪 Portaria")
+
+        portaria_atendimento_nota = pergunta_nota(
+            "Como você avalia o atendimento da portaria?",
+            "portaria_atendimento_nota",
+        )
+
+        portaria_controle_acesso_seguranca_nota = pergunta_nota(
             "Como você avalia o controle de acesso e a segurança no site?",
-            options=[1, 2, 3, 4, 5],
-            index=None,
-            format_func=lambda x: ESCALA_1_5[x],
-            horizontal=True,
-            key="portaria_controle_acesso_seguranca_nota",
+            "portaria_controle_acesso_seguranca_nota",
         )
 
         portaria_comentarios = st.text_area(
@@ -249,27 +300,19 @@ with tab_formulario:
 
         st.divider()
 
-        # -----------------------------
+        # =====================================================
         # REFEIÇÃO
-        # -----------------------------
+        # =====================================================
         st.markdown("### 🍽️ Refeição")
 
-        refeicao_qualidade_nota = st.radio(
+        refeicao_qualidade_nota = pergunta_nota(
             "Como você avalia a qualidade das refeições servidas?",
-            options=[1, 2, 3, 4, 5],
-            index=None,
-            format_func=lambda x: ESCALA_1_5[x],
-            horizontal=True,
-            key="refeicao_qualidade_nota",
+            "refeicao_qualidade_nota",
         )
 
-        refeicao_variedade_cardapio_nota = st.radio(
+        refeicao_variedade_cardapio_nota = pergunta_nota(
             "Como você avalia a variedade do cardápio oferecido?",
-            options=[1, 2, 3, 4, 5],
-            index=None,
-            format_func=lambda x: ESCALA_1_5[x],
-            horizontal=True,
-            key="refeicao_variedade_cardapio_nota",
+            "refeicao_variedade_cardapio_nota",
         )
 
         refeicao_comentarios = st.text_area(
@@ -281,27 +324,19 @@ with tab_formulario:
 
         st.divider()
 
-        # -----------------------------
+        # =====================================================
         # LIMPEZA E JARDINAGEM
-        # -----------------------------
+        # =====================================================
         st.markdown("### 🧹 Limpeza e Jardinagem")
 
-        limpeza_instalacoes_nota = st.radio(
+        limpeza_instalacoes_nota = pergunta_nota(
             "Como você avalia a limpeza das instalações, como escritórios, banheiros e áreas comuns?",
-            options=[1, 2, 3, 4, 5],
-            index=None,
-            format_func=lambda x: ESCALA_1_5[x],
-            horizontal=True,
-            key="limpeza_instalacoes_nota",
+            "limpeza_instalacoes_nota",
         )
 
-        jardinagem_areas_externas_nota = st.radio(
+        jardinagem_areas_externas_nota = pergunta_nota(
             "Como você avalia a conservação das áreas externas e jardins?",
-            options=[1, 2, 3, 4, 5],
-            index=None,
-            format_func=lambda x: ESCALA_1_5[x],
-            horizontal=True,
-            key="jardinagem_areas_externas_nota",
+            "jardinagem_areas_externas_nota",
         )
 
         limpeza_jardinagem_comentarios = st.text_area(
@@ -313,54 +348,51 @@ with tab_formulario:
 
         st.divider()
 
-        # -----------------------------
+        # =====================================================
         # AVALIAÇÃO GERAL
-        # -----------------------------
+        # =====================================================
         st.markdown("### 📋 Avaliação Geral")
 
         nps_satisfacao_geral = st.radio(
-            "Em uma escala de 0 a 10, onde 0 significa 'nada satisfeita(o)' e 10 'extremamente satisfeita(o)', qual é sua satisfação geral com os serviços de Facilities?",
+            "Em uma escala de 0 a 10, onde 0 significa 'nada satisfeita(o)' "
+            "e 10 'extremamente satisfeita(o)', qual é sua satisfação geral "
+            "com os serviços de Facilities?",
             options=list(range(0, 11)),
             index=None,
             horizontal=True,
             key="nps_satisfacao_geral",
         )
 
-        facilities_geral_nota = st.radio(
+        facilities_geral_nota = pergunta_nota(
             "Como você avalia os serviços de Facilities de forma geral?",
-            options=[1, 2, 3, 4, 5],
-            index=None,
-            format_func=lambda x: ESCALA_1_5[x],
-            horizontal=True,
-            key="facilities_geral_nota",
+            "facilities_geral_nota",
         )
 
         servico_precisa_atencao = st.multiselect(
-            "Na sua opinião, quais serviços precisam de mais atenção ou melhorias?",
+            "Na sua opinião, quais serviços precisam de mais atenção ou melhorias? *",
             options=SERVICOS_ATENCAO,
             key="servico_precisa_atencao",
         )
 
         st.divider()
 
-        # -----------------------------
-        # COMENTÁRIOS GERAIS
-        # -----------------------------
+        # =====================================================
+        # COMENTÁRIOS
+        # =====================================================
         st.markdown("### 💬 Comentários e Sugestões")
 
         comentarios_sugestoes = st.text_area(
-            "Deixe aqui seus comentários, elogios ou sugestões de melhoria:",
-            placeholder="Insira sua resposta",
+            "Deixe aqui seus comentários, elogios ou sugestões de melhoria: *",
+            placeholder="Campo obrigatório",
             max_chars=1500,
             key="comentarios_sugestoes",
         )
 
         st.divider()
 
-        # -----------------------------
-        # LOCALIZAÇÃO NO FINAL
-        # Importante: fica fora de st.form para o Município carregar ao selecionar Estado.
-        # -----------------------------
+        # =====================================================
+        # LOCALIZAÇÃO
+        # =====================================================
         st.markdown("### 📍 Localização")
 
         col1, col2 = st.columns(2)
@@ -368,6 +400,7 @@ with tab_formulario:
         with col1:
             estados = ibge.listar_estados()
             estado_options = {e["nome"]: e["id"] for e in estados}
+
             estado = st.selectbox(
                 "Estado:",
                 [""] + list(estado_options.keys()),
@@ -378,6 +411,7 @@ with tab_formulario:
             if estado:
                 municipios = ibge.listar_municipios(estado_options[estado])
                 municipio_options = [m["nome"] for m in municipios]
+
                 municipio = st.selectbox(
                     "Município:",
                     [""] + municipio_options,
@@ -385,6 +419,7 @@ with tab_formulario:
                 )
             else:
                 municipio = ""
+
                 st.selectbox(
                     "Município:",
                     ["Selecione o estado primeiro"],
@@ -401,15 +436,16 @@ with tab_formulario:
 
         if submitted:
             campos_obrigatorios = {
-                "Pontualidade do transporte": transporte_pontualidade_nota,
-                "Conforto e limpeza dos veículos": transporte_conforto_limpeza_nota,
+                "Pontualidade do fretado": transporte_pontualidade_nota,
+                "Conforto e limpeza dos veículos do fretado": transporte_conforto_limpeza_nota,
+                "Segurança durante o deslocamento no fretado": seguranca_veicular_nota,
                 "Atendimento da portaria": portaria_atendimento_nota,
                 "Controle de acesso e segurança": portaria_controle_acesso_seguranca_nota,
                 "Qualidade das refeições": refeicao_qualidade_nota,
                 "Variedade do cardápio": refeicao_variedade_cardapio_nota,
                 "Limpeza das instalações": limpeza_instalacoes_nota,
                 "Conservação das áreas externas e jardins": jardinagem_areas_externas_nota,
-                "Satisfação geral 0 a 10": nps_satisfacao_geral,
+                "Satisfação geral de 0 a 10": nps_satisfacao_geral,
                 "Avaliação geral de Facilities": facilities_geral_nota,
                 "Serviço que precisa de mais atenção": servico_precisa_atencao,
                 "Comentários e sugestões gerais": comentarios_sugestoes,
@@ -420,7 +456,7 @@ with tab_formulario:
             pendentes = [
                 nome
                 for nome, valor in campos_obrigatorios.items()
-                if valor in [None, "", []]
+                if campo_vazio(valor)
             ]
 
             if pendentes:
@@ -428,6 +464,7 @@ with tab_formulario:
                     "⚠️ Preencha os campos obrigatórios antes de enviar: "
                     + ", ".join(pendentes)
                 )
+
             else:
                 dados = {
                     "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -435,6 +472,7 @@ with tab_formulario:
                     "municipio": municipio,
                     "transporte_pontualidade_nota": transporte_pontualidade_nota,
                     "transporte_conforto_limpeza_nota": transporte_conforto_limpeza_nota,
+                    "seguranca_veicular_nota": seguranca_veicular_nota,
                     "transporte_comentarios": transporte_comentarios,
                     "portaria_atendimento_nota": portaria_atendimento_nota,
                     "portaria_controle_acesso_seguranca_nota": portaria_controle_acesso_seguranca_nota,
@@ -447,9 +485,7 @@ with tab_formulario:
                     "limpeza_jardinagem_comentarios": limpeza_jardinagem_comentarios,
                     "nps_satisfacao_geral": nps_satisfacao_geral,
                     "facilities_geral_nota": facilities_geral_nota,
-                    "servico_precisa_atencao": ", ".join(servico_precisa_atencao)
-                    if servico_precisa_atencao
-                    else "",
+                    "servico_precisa_atencao": ", ".join(servico_precisa_atencao),
                     "comentarios_sugestoes": comentarios_sugestoes,
                 }
 
@@ -460,7 +496,8 @@ with tab_formulario:
                     st.rerun()
                 else:
                     st.error(
-                        "❌ Erro ao enviar a avaliação. Verifique a conexão com o Smartsheet e os nomes das colunas."
+                        "❌ Erro ao enviar a avaliação. Verifique a conexão com "
+                        "o Smartsheet e os nomes das colunas."
                     )
 
 
@@ -483,9 +520,7 @@ with tab_resultados:
 
         if st.button("Acessar painel", type="primary"):
             if not PAINEL_SENHA:
-                st.error(
-                    "Senha do painel não configurada. Adicione PAINEL_SENHA no arquivo config.py."
-                )
+                st.error("Senha do painel não configurada. Adicione PAINEL_SENHA no config.py.")
             elif senha_digitada == PAINEL_SENHA:
                 st.session_state.painel_liberado = True
                 st.rerun()
@@ -501,6 +536,7 @@ with tab_resultados:
 
     if df.empty:
         st.info("Nenhuma avaliação registrada ainda.")
+
     else:
         for col in COLUNAS_NOTA:
             if col in df.columns:
@@ -508,34 +544,37 @@ with tab_resultados:
 
         if "nps_satisfacao_geral" in df.columns:
             df["nps_satisfacao_geral"] = pd.to_numeric(
-                df["nps_satisfacao_geral"], errors="coerce"
+                df["nps_satisfacao_geral"],
+                errors="coerce",
             )
 
         colunas_existentes = [col for col in COLUNAS_NOTA if col in df.columns]
+
         labels_existentes = [
-            LABELS_NOTA[COLUNAS_NOTA.index(col)] for col in colunas_existentes
+            LABELS_NOTA[COLUNAS_NOTA.index(col)]
+            for col in colunas_existentes
         ]
 
-        col1, col2, col3, col4 = st.columns(4)
+        c1, c2, c3, c4 = st.columns(4)
 
-        with col1:
+        with c1:
             st.metric("Total de respostas", len(df))
 
-        with col2:
+        with c2:
             if colunas_existentes:
                 media_servicos = df[colunas_existentes].mean().mean()
                 st.metric("Média dos serviços", f"{media_servicos:.1f}/5")
             else:
                 st.metric("Média dos serviços", "-")
 
-        with col3:
+        with c3:
             if "facilities_geral_nota" in df.columns:
                 media_facilities = df["facilities_geral_nota"].mean()
                 st.metric("Facilities geral", f"{media_facilities:.1f}/5")
             else:
                 st.metric("Facilities geral", "-")
 
-        with col4:
+        with c4:
             if "nps_satisfacao_geral" in df.columns:
                 media_nps = df["nps_satisfacao_geral"].mean()
                 st.metric("Satisfação 0 a 10", f"{media_nps:.1f}/10")
@@ -546,6 +585,7 @@ with tab_resultados:
 
         if colunas_existentes:
             medias = [round(df[col].mean(), 2) for col in colunas_existentes]
+
             ranking = pd.DataFrame(
                 {
                     "Item avaliado": labels_existentes,
@@ -563,11 +603,19 @@ with tab_resultados:
             st.markdown("### Satisfação geral - escala 0 a 10")
 
             nps_validos = df["nps_satisfacao_geral"].dropna()
+
             if not nps_validos.empty:
                 promotores = len(nps_validos[nps_validos >= 9])
-                neutros = len(nps_validos[(nps_validos >= 7) & (nps_validos <= 8)])
+                neutros = len(
+                    nps_validos[
+                        (nps_validos >= 7)
+                        & (nps_validos <= 8)
+                    ]
+                )
                 detratores = len(nps_validos[nps_validos <= 6])
+
                 total_nps = len(nps_validos)
+
                 nps_score = (
                     ((promotores - detratores) / total_nps) * 100
                     if total_nps > 0
@@ -575,17 +623,20 @@ with tab_resultados:
                 )
 
                 c1, c2, c3, c4 = st.columns(4)
+
                 with c1:
                     st.metric("Promotores", promotores)
+
                 with c2:
                     st.metric("Neutros", neutros)
+
                 with c3:
                     st.metric("Detratores", detratores)
+
                 with c4:
                     st.metric("NPS", f"{nps_score:.0f}")
 
-                nps_dist = nps_validos.value_counts().sort_index()
-                st.bar_chart(nps_dist)
+                st.bar_chart(nps_validos.value_counts().sort_index())
 
         if "servico_precisa_atencao" in df.columns:
             st.markdown("### Serviços que precisam de mais atenção")
@@ -597,11 +648,11 @@ with tab_resultados:
                 .str.split(", ")
                 .explode()
             )
+
             atencao = atencao[atencao != ""]
 
             if not atencao.empty:
-                contagem = atencao.value_counts()
-                st.bar_chart(contagem)
+                st.bar_chart(atencao.value_counts())
             else:
                 st.info("Ainda não há marcações de serviços que precisam de atenção.")
 
