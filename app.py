@@ -261,7 +261,7 @@ with tab_formulario:
         st.markdown(
             """
             <div class="intro-box">
-                <p><strong>Prezada(o) colaboradora(or),</strong></p>
+                <p><strong>Prezado(a) colaborador(a),</strong></p>
                 <p>
                     Sua opinião é essencial para a melhoria contínua dos nossos
                     serviços de Facilities. Por favor, avalie os aspectos abaixo
